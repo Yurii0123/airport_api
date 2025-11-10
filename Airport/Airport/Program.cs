@@ -1,3 +1,7 @@
+using System;
+using Airport.Data;
+using Airport.Data.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,7 +11,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddData(builder.Configuration);
+
 var app = builder.Build();
+
+// Seed data
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AirportDbContext>();
+    SeedData.Initialize(db);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
